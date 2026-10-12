@@ -75,13 +75,13 @@ struct ModeSelectionView: View {
 
                     rx7LogoHeader
 
-                    Spacer().frame(height: 20)
+                    Spacer().frame(height: 22)
 
                     rx7TitleSection
 
-                    Spacer().frame(height: 30)
+                    Spacer().frame(height: 32)
 
-                    VStack(spacing: 14) {
+                    VStack(spacing: 16) {
                         rx7ModeCard(
                             mode: .normal,
                             title: "FREE FIRE TH",
@@ -101,12 +101,12 @@ struct ModeSelectionView: View {
                     }
                     .padding(.horizontal, 20)
 
-                    Spacer().frame(height: 20)
+                    Spacer().frame(height: 22)
 
                     rx7ProfileCard
                         .padding(.horizontal, 20)
 
-                    Spacer().frame(height: 20)
+                    Spacer().frame(height: 22)
 
                     rx7AdvancedSettingsButton
 
@@ -114,7 +114,7 @@ struct ModeSelectionView: View {
 
                     rx7FooterSection
 
-                    Spacer().frame(height: 20)
+                    Spacer().frame(height: 30)
                 }
             }
         }
@@ -240,14 +240,18 @@ struct ModeSelectionView: View {
                 ZStack {
                     Circle()
                         .fill(accent.opacity(0.15))
-                        .frame(width: 32, height: 32)
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Circle()
+                                .stroke(accent.opacity(0.5), lineWidth: 1)
+                        )
                     Image(systemName: "chevron.up")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(accent)
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.vertical, 16)
             .rx7GlassPanel(cornerRadius: 18, isActive: true, accent: accent)
         }
         .buttonStyle(RX7ScaleButtonStyle())
@@ -294,7 +298,7 @@ struct ModeSelectionView: View {
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ))
-                    .frame(width: 40, height: 40)
+                    .frame(width: 44, height: 44)
 
                 Image(systemName: "person.fill")
                     .font(.system(size: 18, weight: .semibold))
@@ -303,7 +307,7 @@ struct ModeSelectionView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(keyDisplayName)
-                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .font(.system(size: 13, weight: .bold, design: .monospaced))
                     .foregroundStyle(.white)
                     .lineLimit(1)
 
