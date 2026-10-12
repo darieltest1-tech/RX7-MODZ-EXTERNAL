@@ -10,51 +10,42 @@ struct LoginView: View {
     @State private var shakeOffset: CGFloat = 0
     @State private var glowAnimation = false
     @State private var appeared = false
-    @State private var rotationAngle: Double = 0
     @State private var isVerifying = false
-    
+
     var body: some View {
         ZStack {
             background
-            
+
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    Spacer().frame(height: 40)
-                    
-                    topBadge
-                    
-                    Spacer().frame(height: 30)
-                    
-                    logoSection
-                    
-                    Spacer().frame(height: 30)
-                    
-                    titleSection
-                    
-                    Spacer().frame(height: 36)
-                    
-                    welcomeCard
-                    
                     Spacer().frame(height: 20)
-                    
+
+                    heroCard
+
+                    Spacer().frame(height: 24)
+
+                    titleSection
+
+                    Spacer().frame(height: 26)
+
                     passwordField
-                    
-                    Spacer().frame(height: 14)
-                    
+
+                    Spacer().frame(height: 16)
+
                     loginButton
-                    
+
                     if showError {
                         errorMessageView
                     }
-                    
-                    Spacer().frame(height: 24)
-                    
+
+                    Spacer().frame(height: 22)
+
                     statusIndicators
-                    
-                    Spacer().frame(height: 40)
-                    
+
+                    Spacer().frame(height: 24)
+
                     footerSection
-                    
+
                     Spacer().frame(height: 30)
                 }
             }
@@ -63,25 +54,29 @@ struct LoginView: View {
             withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                 glowAnimation = true
             }
-            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
-                rotationAngle = 360
-            }
             withAnimation(.easeOut(duration: 0.6)) {
                 appeared = true
             }
         }
     }
-    
+
     // MARK: - Background
-    
+
     private var background: some View {
         ZStack {
-            Color.black
-                .ignoresSafeArea()
-            
+            Color.rx7Background.ignoresSafeArea()
+
+            if UIImage(named: "rx7_dragones") != nil {
+                Image("rx7_dragones")
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.15)
+                    .ignoresSafeArea()
+            }
+
             RadialGradient(
                 colors: [
-                    Color.white.opacity(glowAnimation ? 0.12 : 0.04),
+                    Color.rx7Cyan.opacity(glowAnimation ? 0.15 : 0.05),
                     Color.clear
                 ],
                 center: .init(x: 0.5, y: 0.15),
@@ -89,11 +84,11 @@ struct LoginView: View {
                 endRadius: 400
             )
             .ignoresSafeArea()
-            
+
             GeometryReader { geo in
-                ForEach(0..<25, id: \.self) { _ in
+                ForEach(0..<20, id: \.self) { _ in
                     Circle()
-                        .fill(Color.white.opacity(0.25))
+                        .fill(Color.rx7Cyan.opacity(0.4))
                         .frame(width: 2, height: 2)
                         .position(
                             x: CGFloat.random(in: 0...geo.size.width),
@@ -105,286 +100,266 @@ struct LoginView: View {
             .ignoresSafeArea()
         }
     }
-    
-    // MARK: - Top Badge
-    
-    private var topBadge: some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(Color.white)
-                .frame(width: 6, height: 6)
-                .shadow(color: .white.opacity(0.8), radius: 4)
-            Text("SISTEMA ACTIVO")
-                .font(.system(size: 10, weight: .bold))
-                .tracking(2)
-                .foregroundStyle(.white.opacity(0.9))
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(
-            Capsule()
-                .fill(Color.white.opacity(0.08))
+
+    // MARK: - Hero Card (imagen arriba)
+
+    private var heroCard: some View {
+        ZStack(alignment: .topLeading) {
+            // Imagen de fondo
+            if UIImage(named: "login_hero") != nil {
+                Image("login_hero")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 200)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+            } else {
+                LinearGradient(
+                    colors: [.rx7Panel, .rx7Background],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .frame(height: 200)
                 .overlay(
-                    Capsule()
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    Text("RX7 MODZ")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .tracking(4)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.rx7Cyan, .rx7Purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                 )
-        )
-        .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.5).delay(0.1), value: appeared)
-    }
-    
-    // MARK: - Logo Section
-    
-    private var logoSection: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.white.opacity(glowAnimation ? 0.2 : 0.05),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: 40,
-                        endRadius: 110
+            }
+
+            // Overlay oscuro arriba para que el badge se lea
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.5),
+                    Color.clear,
+                    Color.black.opacity(0.25)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 200)
+
+            // Badge "RX7 / ACCESO DE LICENCIA"
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(Color.rx7Online)
+                    .frame(width: 6, height: 6)
+                    .shadow(color: Color.rx7Online.opacity(0.9), radius: 4)
+
+                Text("RX7")
+                    .font(.system(size: 10, weight: .heavy))
+                    .tracking(2)
+                    .foregroundStyle(Color.rx7Cyan)
+
+                Text("/")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(Color.rx7TextSecondary)
+
+                Text("ACCESO DE LICENCIA")
+                    .font(.system(size: 9, weight: .bold))
+                    .tracking(1.5)
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .fill(Color.black.opacity(0.55))
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.rx7Cyan.opacity(0.4), lineWidth: 1)
                     )
-                )
-                .frame(width: 220, height: 220)
-            
-            Circle()
-                .stroke(
-                    AngularGradient(
-                        colors: [
-                            Color.white.opacity(0),
-                            Color.white.opacity(0.6),
-                            Color.white.opacity(0),
-                            Color.white.opacity(0.4),
-                            Color.white.opacity(0)
-                        ],
-                        center: .center
-                    ),
-                    style: StrokeStyle(lineWidth: 1.5, dash: [4, 8])
-                )
-                .frame(width: 150, height: 150)
-                .rotationEffect(.degrees(rotationAngle))
-            
-            Circle()
-                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                .frame(width: 120, height: 120)
-            
-            Circle()
+            )
+            .padding(.top, 12)
+            .padding(.leading, 12)
+        }
+        .frame(height: 200)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(
                     LinearGradient(
-                        colors: [.white, Color.white.opacity(0.5)],
+                        colors: [.rx7Cyan.opacity(0.5), .rx7Purple.opacity(0.4)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 3
+                    lineWidth: 1.5
                 )
-                .frame(width: 100, height: 100)
-                .shadow(color: .white.opacity(0.6), radius: glowAnimation ? 25 : 12)
-            
-            Image("Logo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 76, height: 76)
-                .clipShape(Circle())
-                .shadow(color: .white.opacity(0.4), radius: 10)
-        }
-        .frame(height: 220)
+        )
+        .shadow(color: .rx7Cyan.opacity(0.3), radius: 15)
+        .padding(.horizontal, 20)
         .opacity(appeared ? 1 : 0)
-        .scaleEffect(appeared ? 1 : 0.9)
+        .scaleEffect(appeared ? 1 : 0.95)
         .animation(.easeOut(duration: 0.6).delay(0.15), value: appeared)
     }
-    
+
     // MARK: - Title Section
-    
+
     private var titleSection: some View {
-        VStack(spacing: 10) {
-            Text("DARIELMODZ")
-                .font(.system(size: 32, weight: .heavy, design: .rounded))
-                .tracking(3)
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, Color.white.opacity(0.7)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .shadow(color: .white.opacity(0.4), radius: 10)
-            
-            HStack(spacing: 8) {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.clear, .white, .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(width: 40, height: 1)
-                
-                Text("EXTERNAL")
-                    .font(.system(size: 11, weight: .bold))
-                    .tracking(5)
-                    .foregroundStyle(.white.opacity(0.8))
-                
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.clear, .white, .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(width: 40, height: 1)
-            }
+        VStack(spacing: 6) {
+            Text("INICIA SESIÓN")
+                .font(.system(size: 28, weight: .heavy, design: .rounded))
+                .tracking(2)
+                .foregroundStyle(.white)
+                .shadow(color: .rx7Cyan.opacity(0.4), radius: 8)
+
+            Text("Pega tu licencia para abrir el panel RX7")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.rx7TextSecondary)
         }
         .opacity(appeared ? 1 : 0)
         .animation(.easeOut(duration: 0.6).delay(0.25), value: appeared)
     }
-    
-    // MARK: - Welcome Card
-    
-    private var welcomeCard: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Color.white.opacity(0.1))
-                    .frame(width: 40, height: 40)
-                Image(systemName: "lock.shield.fill")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
-            
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Acceso restringido")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("Introduce tu clave para continuar")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.6))
-            }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(.white.opacity(0.4))
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.04))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
-                )
-        )
-        .padding(.horizontal, 28)
-        .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6).delay(0.35), value: appeared)
-    }
-    
+
     // MARK: - Password Field
-    
+
     private var passwordField: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "key.fill")
-                .foregroundStyle(.white)
-                .font(.system(size: 15))
-            
-            SecureField("Introduce tu clave...", text: $password)
-                .textFieldStyle(.plain)
-                .foregroundStyle(.white)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-                .submitLabel(.go)
-                .onSubmit(attemptLogin)
-                .disabled(isVerifying)
-            
-            if !password.isEmpty && !isVerifying {
-                Button {
-                    password = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.white.opacity(0.5))
-                        .font(.system(size: 14))
-                }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "key.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(Color.rx7Cyan)
+                Text("KEY DE ACCESO")
+                    .font(.system(size: 10, weight: .heavy))
+                    .tracking(1.5)
+                    .foregroundStyle(Color.rx7Cyan)
+                Spacer()
+                Text("LICENCIA")
+                    .font(.system(size: 9, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(Color.rx7TextSecondary)
             }
-        }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.06))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(
-                            showError
-                                ? Color.red.opacity(0.6)
-                                : Color.white.opacity(0.25),
-                            lineWidth: 1.5
-                        )
-                )
-                .shadow(color: .white.opacity(0.1), radius: 12)
-        )
-        .padding(.horizontal, 28)
-        .offset(x: shakeOffset)
-        .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6).delay(0.45), value: appeared)
-    }
-    
-    // MARK: - Login Button
-    
-    private var loginButton: some View {
-        Button(action: attemptLogin) {
-            HStack(spacing: 10) {
-                if isVerifying {
-                    ProgressView()
-                        .tint(.black)
-                        .scaleEffect(0.9)
-                    Text("VERIFICANDO...")
-                        .font(.system(size: 15, weight: .heavy))
-                        .tracking(2)
+            .padding(.horizontal, 4)
+
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.rx7PanelAlt)
+                        .frame(width: 34, height: 34)
+                    Image(systemName: "key.horizontal.fill")
+                        .foregroundStyle(Color.rx7Cyan)
+                        .font(.system(size: 14, weight: .semibold))
+                }
+
+                SecureField("Pega tu key aquí", text: $password)
+                    .textFieldStyle(.plain)
+                    .foregroundStyle(.white)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .submitLabel(.go)
+                    .onSubmit(attemptLogin)
+                    .disabled(isVerifying)
+
+                if !password.isEmpty && !isVerifying {
+                    Button {
+                        password = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(Color.rx7TextSecondary)
+                            .font(.system(size: 14))
+                    }
                 } else {
-                    Image(systemName: "arrow.right.circle.fill")
-                        .font(.system(size: 17, weight: .bold))
-                    Text("ENTRAR")
-                        .font(.system(size: 15, weight: .heavy))
-                        .tracking(2)
+                    Button {
+                        if let clipboard = UIPasteboard.general.string {
+                            password = clipboard
+                        }
+                    } label: {
+                        Text("PEGAR")
+                            .font(.system(size: 11, weight: .heavy))
+                            .tracking(1)
+                            .foregroundStyle(Color.rx7Cyan)
+                    }
                 }
             }
-            .foregroundStyle(.black)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white,
-                                Color(white: 0.85)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(Color.rx7Panel.opacity(0.85))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(
+                                showError
+                                    ? Color.red.opacity(0.6)
+                                    : Color.rx7Cyan.opacity(0.35),
+                                lineWidth: 1.2
+                            )
                     )
-                    .shadow(color: .white.opacity(0.4), radius: 15, y: 5)
+                    .shadow(color: Color.rx7Cyan.opacity(0.15), radius: 10)
             )
         }
         .padding(.horizontal, 28)
-        .disabled(password.isEmpty || isVerifying)
-        .opacity((password.isEmpty || isVerifying) ? 0.4 : 1.0)
-        .scaleEffect(password.isEmpty ? 0.98 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: password.isEmpty)
+        .offset(x: shakeOffset)
         .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6).delay(0.5), value: appeared)
+        .animation(.easeOut(duration: 0.6).delay(0.35), value: appeared)
     }
-    
+
+    // MARK: - Login Button
+
+    private var loginButton: some View {
+        VStack(spacing: 10) {
+            Button(action: attemptLogin) {
+                HStack(spacing: 10) {
+                    if isVerifying {
+                        ProgressView()
+                            .tint(.black)
+                            .scaleEffect(0.9)
+                        Text("VERIFICANDO...")
+                            .font(.system(size: 15, weight: .heavy))
+                            .tracking(2)
+                    } else {
+                        Text("INGRESAR")
+                            .font(.system(size: 15, weight: .heavy))
+                            .tracking(2)
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 15, weight: .bold))
+                    }
+                }
+                .foregroundStyle(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(
+                            LinearGradient(
+                                colors: [.rx7Cyan, .rx7Purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .shadow(color: .rx7Cyan.opacity(0.5), radius: 15, y: 5)
+                )
+            }
+            .disabled(password.isEmpty || isVerifying)
+            .opacity((password.isEmpty || isVerifying) ? 0.45 : 1.0)
+
+            Button {
+                if !password.isEmpty {
+                    attemptLogin()
+                }
+            } label: {
+                Text("REINTENTAR VERIFICACIÓN")
+                    .font(.system(size: 11, weight: .heavy))
+                    .tracking(1.5)
+                    .foregroundStyle(Color.rx7Cyan.opacity(0.9))
+            }
+            .disabled(password.isEmpty || isVerifying)
+            .opacity(password.isEmpty ? 0.35 : 1.0)
+        }
+        .padding(.horizontal, 28)
+        .opacity(appeared ? 1 : 0)
+        .animation(.easeOut(duration: 0.6).delay(0.45), value: appeared)
+    }
+
     // MARK: - Error Message
-    
+
     private var errorMessageView: some View {
         HStack(spacing: 6) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -396,19 +371,19 @@ struct LoginView: View {
         .padding(.top, 12)
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
-    
+
     // MARK: - Status Indicators
-    
+
     private var statusIndicators: some View {
         HStack(spacing: 20) {
-            statusDot(color: supabase.isConnected ? .white : .gray, label: "Online")
-            statusDot(color: .white, label: "v2.0")
-            statusDot(color: .white, label: "Beta")
+            statusDot(color: supabase.isConnected ? Color.rx7Online : .gray, label: "Online")
+            statusDot(color: Color.rx7Cyan, label: "v2.0")
+            statusDot(color: Color.rx7Purple, label: "Beta")
         }
         .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6).delay(0.6), value: appeared)
+        .animation(.easeOut(duration: 0.6).delay(0.55), value: appeared)
     }
-    
+
     private func statusDot(color: Color, label: String) -> some View {
         HStack(spacing: 5) {
             Circle()
@@ -417,49 +392,49 @@ struct LoginView: View {
                 .shadow(color: color.opacity(0.8), radius: 3)
             Text(label)
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(Color.rx7TextSecondary)
         }
     }
-    
+
     // MARK: - Footer
-    
+
     private var footerSection: some View {
         HStack(spacing: 6) {
-            Image(systemName: "hammer.fill")
-                .font(.system(size: 9))
-                .foregroundStyle(.white.opacity(0.5))
-            Text("Hecho por didierxitx7")
+            Image(systemName: "lock.shield.fill")
+                .font(.system(size: 10))
+                .foregroundStyle(Color.rx7Cyan.opacity(0.7))
+            Text("Tu licencia se valida con el servidor")
                 .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(Color.rx7TextSecondary)
         }
         .opacity(appeared ? 1 : 0)
-        .animation(.easeOut(duration: 0.6).delay(0.7), value: appeared)
+        .animation(.easeOut(duration: 0.6).delay(0.65), value: appeared)
     }
-    
+
     // MARK: - Login Logic (Supabase)
-    
+
     private func attemptLogin() {
         guard !isVerifying else { return }
         guard !password.isEmpty else { return }
-        
+
         isVerifying = true
         showError = false
-        
+
         Task {
             do {
                 let key = try await supabase.verifyKey(password)
                 log("login: key verificada — \(key.label ?? "sin label")")
-                
+
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
-                
+
                 await MainActor.run {
                     isVerifying = false
                     withAnimation(.easeInOut(duration: 0.3)) {
                         session.isAuthenticated = true
                     }
                 }
-                
+
             } catch let error as SupabaseError {
                 await MainActor.run {
                     isVerifying = false
@@ -475,15 +450,13 @@ struct LoginView: View {
             }
         }
     }
-    
+
     // MARK: - Handle Login Error
-    
+
     private func handleLoginError(_ error: SupabaseError) {
-        // Vibración de error
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.error)
-        
-        // Mensaje específico según el error
+
         switch error {
         case .keyNotFound:
             errorMessage = "Clave no encontrada"
@@ -502,13 +475,13 @@ struct LoginView: View {
         case .invalidURL, .noData, .decodingFailed:
             errorMessage = "Error del servidor"
         }
-        
+
         showError = true
         shakePasswordField()
     }
-    
+
     // MARK: - Shake Animation
-    
+
     private func shakePasswordField() {
         withAnimation(.default) { shakeOffset = -10 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
